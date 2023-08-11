@@ -57,7 +57,7 @@ class ServerListViewSet(viewsets.ViewSet):
 
         # Filter the queryset based on the query parameters.
         if category:
-            self.queryset = self.queryset.filter(category__name = category)
+            self.queryset = self.queryset.filter(category = category)
 
         if by_user:
             user_id = request.user.id

@@ -1,6 +1,6 @@
 import {AppBar, Box, Drawer, IconButton, Toolbar, Typography, useMediaQuery} from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useTheme } from '@emotion/react'
+import { useTheme } from '@mui/material/styles'
 import Link from '@mui/material/Link'
 import React from 'react'
 
@@ -36,7 +36,8 @@ const PrimaryAppBar = () => {
     }}>
         <Toolbar
         variant='dense'
-        sx={{height:theme.primaryAppBar.height}}>
+        sx={{height:theme.primaryAppBar.height,
+            minHeight: theme.primaryAppBar.height,}}>
 
         <Box sx={{display:{xs:"block", sm:"none"}}}>
             <IconButton
@@ -52,7 +53,7 @@ const PrimaryAppBar = () => {
         </Box>
         <Drawer anchor='left' open={sideMenu} onClose={toggleDrawer(false)}>
             {[...Array(100)].map((_, i) => (
-                <Typography key={i}>{i+1}</Typography>
+                <Typography key={i} paragraph>{i+1}</Typography>
             ))}
         </Drawer>
         <Link href="/" underline='none' color="inherit">
