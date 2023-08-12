@@ -5,6 +5,7 @@ from django.db.models import Count
 from .serializers import ServerSerializer
 from rest_framework.validators import ValidationError
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 
 class ServerListViewSet(viewsets.ViewSet):
@@ -30,6 +31,7 @@ class ServerListViewSet(viewsets.ViewSet):
     """
 
     queryset = Server.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def list(self, request):
         """
