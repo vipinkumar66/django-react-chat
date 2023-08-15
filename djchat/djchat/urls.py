@@ -9,6 +9,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 
 router.register("api/server/select", views.ServerListViewSet)
+router.register("api/server/category", views.CategoryListViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,11 +1,21 @@
 from rest_framework import viewsets
-from .models import Server
+from .models import Server, Category
 from rest_framework import exceptions
 from django.db.models import Count
-from .serializers import ServerSerializer
+from .serializers import ServerSerializer, CategorySerializer
 from rest_framework.validators import ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema
+
+
+class CategoryListViewSet(viewsets.ViewSet):
+    queryset = Category.objects.all()
+
+    # @extend_schema(responses=CategorySerializer)
+    def list(self, request):
+        serializer = CategorySerializer(self.queryset, many=True)
+        return Response(serializer.data)
 
 
 class ServerListViewSet(viewsets.ViewSet):

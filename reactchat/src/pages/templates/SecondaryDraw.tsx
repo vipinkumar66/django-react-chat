@@ -1,8 +1,14 @@
 import { Box, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import jwtinterceptor from "../../helpers/jwtinterceptor";
+import { ReactNode } from "react";
 
-const SecondaryDraw = () => {
+
+type SecondaryDrawProps = {
+  children: ReactNode;
+};
+
+const SecondaryDraw = ({children}:SecondaryDrawProps) => {
     const theme = useTheme();
     const jwtAxios = jwtinterceptor()
 
@@ -23,12 +29,9 @@ const SecondaryDraw = () => {
 
         display:{xs:"none", sm:"block"},
     }}>
-        {[...Array(50)].map((_, i) => (
-            <Typography key={i} paragraph>
-              {i+1}
-            </Typography>
-        ))}
+        {children}
     </Box>
+
   )
 }
 
