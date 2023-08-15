@@ -31,7 +31,7 @@ class ServerListViewSet(viewsets.ViewSet):
     """
 
     queryset = Server.objects.all()
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def list(self, request):
         """

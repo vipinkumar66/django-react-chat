@@ -63,19 +63,6 @@ class Server(models.Model):
     description = models.CharField(max_length=250, null=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
-    # String representation of the Server model
-    def __str__(self):
-        return self.name
-
-# Model representing a Channel
-class Channel(models.Model):
-    # Fields for channel information
-    name = models.CharField(max_length=100)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                              related_name="channel_owner")
-    server = models.ForeignKey(Server, on_delete=models.CASCADE,
-                               related_name="channel_server")
-    topic = models.CharField(max_length=100)
     banner = models.ImageField(
         upload_to=server_upload_banner_category,
         null=True,
@@ -96,22 +83,35 @@ class Channel(models.Model):
         before saving.
         """
         if self.id:
-            existing_object = get_object_or_404(Channel, self.id)
+            existing_object = get_object_or_404(Server, self.id)
             if existing_object.icon != self.icon:
                 existing_object.icon.delete(save=False)
             if existing_object.banner != self.banner:
                 existing_object.banner.delete(save=False)
 
-        super(Channel, self).save(*args, **kwargs)
+        super(Server, self).save(*args, **kwargs)
 
     @receiver(models.signals.pre_delete, sender="server.Server")
-    def channel_delete_file(sender, instance, **kwargs):
+    def server_delete_file(sender, instance, **kwargs):
         for field in instance._meta.fields:
             if field.name == "icon" or field.name == "banner":
                 file = getattr(instance, field.name)
                 if file:
                     file.delete(save=False)
 
+    # String representation of the Server model
+    def __str__(self):
+        return self.name
+
+# Model representing a Channel
+class Channel(models.Model):
+    # Fields for channel information
+    name = models.CharField(max_length=100)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                              related_name="channel_owner")
+    server = models.ForeignKey(Server, on_delete=models.CASCADE,
+                               related_name="channel_server")
+    topic = models.CharField(max_length=100)
 
     # String representation of the Channel model
     def __str__(self):

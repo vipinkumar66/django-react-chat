@@ -1,10 +1,23 @@
 import { Box, Typography, useMediaQuery, styled } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode,ReactElement } from "react";
 import { useTheme } from "@mui/material/styles";
 import DrawToggle from "../../components/primarydrawer/DrawToggle";
 import MuiDrawer from "@mui/material/Drawer";
+import React from 'react';
 
-const PrimaryDraw = () => {
+type Props = {
+  children:ReactNode;
+}
+
+type ChildProps = {
+  // This is to pass the drawer component state value that whether the
+  // primary bar is opened or not
+  open:boolean
+}
+
+type ChildElement = ReactElement<ChildProps>;
+
+const PrimaryDraw: React.FC<Props> = ({children}) => {
   const theme = useTheme();
   const below600 = useMediaQuery("(max-width:599px)");
   const [open, setOpen] = useState(!below600);
@@ -82,12 +95,13 @@ const PrimaryDraw = () => {
             handleDrawerClose={handleDrawerClose}
             handleDrawerOpen={handleDrawerOpen}
           />
-          {[...Array(50)].map((_, i) => (
-            <Typography key={i} paragraph>
-              {i + 1}
-            </Typography>
-          ))}
+
         </Box>
+          {React.Children.map(children, (child)=>{
+              return React.isValidElement(child)
+              ? React.cloneElement(child as ChildElement, {open})
+              :child;
+            })}
       </Box>
     </Drawer>
   );
