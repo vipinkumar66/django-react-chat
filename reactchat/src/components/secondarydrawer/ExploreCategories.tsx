@@ -23,6 +23,7 @@ interface Category {
 
 const ExploreCategories = () =>{
     const theme = useTheme();
+    const isDarkMode = theme.palette.mode === "dark";
     const {dataCRUD, fetchData, error, isLoading} = useCrud<Category>([], "/server/category/")
 
     useEffect(()=>{
@@ -61,7 +62,7 @@ const ExploreCategories = () =>{
                                     <img src={`${MEDIA_URL}${item.category_icon}`} alt="Category Icon"
                                     style ={{
                                         width:"25px", height:"25px", display:"block",
-                                        margin:"auto"
+                                        margin:"auto", filter:isDarkMode ? "invert(100%)" : "none"
                                     }}/>
                                 </ListItemAvatar>
                                 </ListItemIcon>

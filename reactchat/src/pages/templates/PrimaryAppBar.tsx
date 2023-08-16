@@ -1,82 +1,100 @@
-import {AppBar, Box, Drawer, IconButton, Toolbar, Typography, useMediaQuery} from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import { useTheme } from '@mui/material/styles'
-import Link from '@mui/material/Link'
-import React from 'react'
-import ExploreCategories from '../../components/secondarydrawer/ExploreCategories'
+import {
+    AppBar,
+    Box,
+    Drawer,
+    IconButton,
+    Link,
+    Toolbar,
+    Typography,
+    useMediaQuery,
+  } from "@mui/material";
+  import { useTheme } from "@mui/material/styles";
+  import MenuIcon from "@mui/icons-material/Menu";
+  import { useEffect, useState } from "react";
+  import ExploreCategories from "../../components/secondarydrawer/ExploreCategories";
+  import AccountButton from "../../components/PrimaryAppBar/AccountButton";
 
-const PrimaryAppBar = () => {
 
-    const theme = useTheme()
-    const [sideMenu, setSideMenu] = React.useState(false)
+
+  const PrimaryAppBar = () => {
+    const [sideMenu, setSideMenu] = useState(false);
+    const theme = useTheme();
 
     const isSmallScreen = useMediaQuery(theme.breakpoints.up("sm"));
 
-    React.useEffect(()=>{
-        if (isSmallScreen && sideMenu){
-            setSideMenu(false);
-        }
-    },[isSmallScreen])
+    useEffect(() => {
+      if (isSmallScreen && sideMenu) {
+        setSideMenu(false);
+      }
+    }, [isSmallScreen]);
 
-    const toggleDrawer = (open:boolean) => (event) =>{
-        if(
-            event.type === "keydown" &&
-            ((event.key === "Tab")||
-            (event.key === "Shift"))
-        ){
-            return;
+    const toggleDrawer =
+      (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+        if (
+          event.type === "keydown" &&
+          ((event as React.KeyboardEvent).key === "Tab" ||
+            (event as React.KeyboardEvent).key === "Shift")
+        ) {
+          return;
         }
-            setSideMenu(open);
-    }
+        setSideMenu(open);
+      };
 
-    const list = () =>(
-        <Box sx={{
-            paddingTop: `${theme.primaryAppBar.height}px`,
-            minWidth:200
-        }}
+    const list = () => (
+      <Box
+        sx={{ paddingTop: `${theme.primaryAppBar.height}px`, minWidth: 200 }}
         onClick={toggleDrawer(false)}
-        onKeyDown={toggleDrawer(false)}>
-            <ExploreCategories/>
-        </Box>
+        onKeyDown={toggleDrawer(false)}
+      >
+        <ExploreCategories />
+      </Box>
     );
 
-  return (
-    <AppBar sx={{
-        zIndex: (theme) => theme.zIndex.drawer + 2,
-        backgroundColor: theme.palette.background.default,
-        borderBottom: `1px solid ${theme.palette.divider}`
-    }}>
+    return (
+      <AppBar
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 2,
+          backgroundColor: theme.palette.background.default,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }}
+      >
         <Toolbar
-        variant='dense'
-        sx={{height:theme.primaryAppBar.height,
-            minHeight: theme.primaryAppBar.height,}}>
-
-        <Box sx={{display:{xs:"block", sm:"none"}}}>
+          variant="dense"
+          sx={{
+            height: theme.primaryAppBar.height,
+            minHeight: theme.primaryAppBar.height,
+          }}
+        >
+          <Box sx={{ display: { xs: "block", sm: "none" } }}>
             <IconButton
-                color="inherit"
-                aria-label='open drawer'
-                edge="start"
-                sx={{mr:2}}
-                onClick={toggleDrawer(true)}>
-
-                <MenuIcon/>
-
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={toggleDrawer(true)}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
             </IconButton>
-        </Box>
-        <Drawer anchor='left' open={sideMenu} onClose={toggleDrawer(false)}>
+          </Box>
+
+          <Drawer anchor="left" open={sideMenu} onClose={toggleDrawer(false)}>
             {list()}
-        </Drawer>
-        <Link href="/" underline='none' color="inherit">
-            <Typography variant='h5' noWrap component="div" sx={{
-                display:{fontWeight:700, letterSpacing:"-0.5px"}
-            }}>
-                DjChat
+          </Drawer>
+
+          <Link href="/" underline="none" color="inherit">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ display: { fontWeight: 700, letterSpacing: "-0.5px" } }}
+            >
+              DJCHAT
             </Typography>
-        </Link>
-
+          </Link>
+          <Box sx={{ flexGrow: 1 }}></Box>
+          <AccountButton />
         </Toolbar>
-    </AppBar>
-  )
-}
-
-export default PrimaryAppBar
+      </AppBar>
+    );
+  };
+  export default PrimaryAppBar;
