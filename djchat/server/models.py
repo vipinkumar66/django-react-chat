@@ -37,6 +37,7 @@ class Category(models.Model):
             existing = get_object_or_404(Category, id=self.id)
             if existing.category_icon != self.category_icon:
                 existing.category_icon.delete(save=False)
+        self.name = self.name.lower()
         super(Category, self).save(*args, **kwargs)
 
     # Signal receiver to delete associated category icon file before the category is deleted
@@ -79,11 +80,12 @@ class Server(models.Model):
     # Overriding save method to modify the name field before saving
     def save(self, *args, **kwargs):
         """
-        Custom save method for the Channel model. It converts the name to lowercase
+        Custom save method for the Server model. It converts the name to lowercase
         before saving.
         """
         if self.id:
-            existing_object = get_object_or_404(Server, self.id)
+            existing_object = get_object_or_404(Server, id=self.id)
+            print(existing_object)
             if existing_object.icon != self.icon:
                 existing_object.icon.delete(save=False)
             if existing_object.banner != self.banner:
