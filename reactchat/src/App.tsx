@@ -4,11 +4,13 @@ import { createBrowserRouter, Route, RouterProvider,
 
 import Explore from "./pages/Explore"
 import ToggleColorMode from "./components/ToggleColorMode"
+import Servers from "./pages/Servers"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/" element={<Home/>}/>
+      <Route path="/server" element={<Servers/>}/>
       <Route path="/explore/:categoryName" element={<Explore/>}/>
 
     </Route>
