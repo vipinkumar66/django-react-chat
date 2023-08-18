@@ -5,7 +5,7 @@ from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from server import views
 from rest_framework.routers import DefaultRouter
-from webchat.consumer import MyConsumer
+from webchat.consumer import WebsocketConsumer
 
 router = DefaultRouter()
 
@@ -18,7 +18,7 @@ urlpatterns = [
     path("api/auth/schema/ui", SpectacularSwaggerView.as_view()),
 ]+ router.urls
 
-websocket_urlpatterns = [path('ws/test', MyConsumer.as_asgi())]
+websocket_urlpatterns = [path('ws/test', WebsocketConsumer.as_asgi())]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

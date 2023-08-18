@@ -1,18 +1,30 @@
-from channels.generic.websocket import WebsocketConsumer
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import JsonWebsocketConsumer
 
-class MyConsumer(WebsocketConsumer):
+class WebsocketConsumer(JsonWebsocketConsumer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.room_name = "testserver"
 
     def connect(self):
-        # Called on connection.
-        # To accept the connection call:
-        self.accept()
-        # To reject the connection, call:
-        # self.close()
 
-    def receive(self, text_data):
-        print(text_data)
-        self.send(text_data="Hello world!")
-        self.close()
+        self.accept()
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_name,
+            self.channel_name
+        )
+
+    def receive_json(self, content):
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_name, {
+                "type":"chat.message",
+                "new_message":content["message"]
+            }
+        )
+
+    def chat_message(self, event):
+        self.send_json(event)
 
     def disconnect(self, close_code):
         # Called when the socket closes
