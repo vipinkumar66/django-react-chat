@@ -6,11 +6,13 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from server import views
 from rest_framework.routers import DefaultRouter
 from webchat.consumer import WebsocketConsumer
+from webchat.views import MessageViewSet
 
 router = DefaultRouter()
 
 router.register("api/server/select", views.ServerListViewSet)
 router.register("api/server/category", views.CategoryListViewSet)
+router.register("api/messages", MessageViewSet, basename='message')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
