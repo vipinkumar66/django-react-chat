@@ -1,57 +1,66 @@
-import React from "react"
-import useWebSocket from "react-use-websocket"
-
-const websocketUrl = "ws://127.0.0.1:8000/ws/test"
-
-
+// import React from 'react'
+import {Box, CssBaseline} from '@mui/material'
+import PrimaryAppBar from './templates/PrimaryAppBar'
+import PrimaryDraw from './templates/PrimaryDraw'
+import SecondaryDraw from './templates/SecondaryDraw'
+import Main from './templates/Main'
+import MessageInterface from '../components/main/MessageInterface'
+import ServerChannels from '../components/secondarydrawer/ServerChannels'
+import UserServers from '../components/primarydrawer/UserServers'
+import { useNavigate, useParams } from 'react-router-dom'
+import useCrud from '../hooks/useCrud'
+import { Server } from '../@types/server'
+import { useEffect } from 'react'
 
 const Servers = () => {
 
-    const [message, setMessage] = React.useState("")
-    const [newMessage, setNewMessage] = React.useState<string[]>([]);
+    const navigate = useNavigate();
+    const {serverId, channelId} = useParams();
 
-    const { sendJsonMessage } = useWebSocket(websocketUrl, {
-        onOpen: () =>{
-            console.log("Connected")
-        },
-        onClose: () =>{
-            console.log("Closed")
-        },
-        onError: () =>{
-            console.log("Error")
-        },
-        onMessage: (msg) =>{
-            const data = JSON.parse(msg.data)
-            console.log(data)
-            setNewMessage((prevMessage) => [...prevMessage, data.new_message])
+    const {dataCRUD, error, isLoading, fetchData} = useCrud<Server>(
+        [],
+        `/server/select/?by_server=${serverId}`
+    );
+    if (error!==null && error.message === "400"){
+        navigate("/");
+        return null;
+    }
+
+    useEffect(()=>{
+        fetchData();
+    },[])
+
+    const isChannel = (): Boolean =>{
+        if (!channelId){
+            return true;
         }
-    })
+        return dataCRUD.some((server) =>
+        server.channel_server.some(
+            (channel) => channel.id === parseInt(channelId)
+        )
+      )
+    }
+
+    useEffect(()=>{
+      if (!isChannel()){
+        navigate(`/server/${serverId}`);
+      }
+    },[isChannel, channelId])
 
   return (
-    <>
-        <div>
-            {newMessage.map((msg, index)=>{
-                return (
-                    <div key={index}>
-                        <p>{msg}</p>
-                    </div>
-                );
-            })}
-        </div>
-        <form>
-            <label>
-                Enter Message:
-                <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                />
-            </label>
-        </form>
-        <button onClick={() => {sendJsonMessage({type:"message", message})}}>
-            SEND MESSAGE
-        </button>
-    </>
+    <Box sx={{ display:"flex" }}>
+      <CssBaseline/>
+      <PrimaryAppBar/>
+      <PrimaryDraw>
+        <UserServers open={false} data={dataCRUD}/>
+      </PrimaryDraw>
+      <SecondaryDraw>
+        <ServerChannels data={dataCRUD}/>
+      </SecondaryDraw>
+      <Main>
+        <MessageInterface/>
+      </Main>
+    </Box>
   )
 }
 

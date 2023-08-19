@@ -18,7 +18,7 @@ urlpatterns = [
     path("api/auth/schema/ui", SpectacularSwaggerView.as_view()),
 ]+ router.urls
 
-websocket_urlpatterns = [path('ws/test', WebsocketConsumer.as_asgi())]
+websocket_urlpatterns = [path('<str:serverId>/<str:channelId>', WebsocketConsumer.as_asgi())]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

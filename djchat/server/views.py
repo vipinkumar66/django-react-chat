@@ -63,7 +63,7 @@ class ServerListViewSet(viewsets.ViewSet):
         by_server = request.query_params.get("by_server")
 
         # Check if the authenticated user is authorized to list servers.
-        if by_user or by_server:
+        if by_user:
             if not request.user.is_authenticated:
                 raise exceptions.AuthenticationFailed()
 
