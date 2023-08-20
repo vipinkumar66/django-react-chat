@@ -3,8 +3,10 @@ import { useParams } from "react-router-dom"
 import useWebSocket from "react-use-websocket"
 import useCrud from "../../hooks/useCrud"
 import { Server } from "../../@types/server"
-import { Box, Typography } from "@mui/material"
-
+import { Box, Typography, List, ListItem,
+    ListItemText, ListItemAvatar, Avatar,
+    useTheme, TextField } from "@mui/material"
+import MessageInterfaceChannels from "./MessageInterfaceChannels"
 
 interface ServerChannelProps{
     data: Server[];
@@ -16,8 +18,14 @@ interface Message{
     timestamp: string;
 }
 
-const MessageInterface = (props:ServerChannelProps) => {
+interface SendMessageData{
+    type:string;
+    message: string;
+    [key:string]: any;
+}
 
+const MessageInterface = (props:ServerChannelProps) => {
+    const theme = useTheme();
     const {data} = props;
     const [message, setMessage] = React.useState("")
     const [newMessage, setNewMessage] = React.useState<Message[]>([]);
@@ -51,11 +59,32 @@ const MessageInterface = (props:ServerChannelProps) => {
             const data = JSON.parse(msg.data)
             console.log(data)
             setNewMessage((prevMessage) => [...prevMessage, data.new_message])
+            setMessage("");
         }
     })
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) =>{
+        if (e.key === "Enter"){
+            e.preventDefault();
+            sendJsonMessage({
+            type:"message",
+            message,
+        } as SendMessageData)
+        }
+
+    }
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) =>{
+        e.preventDefault()
+        sendJsonMessage({
+            type:"message",
+            message,
+        } as SendMessageData)
+    }
+
   return (
     <>
+    <MessageInterfaceChannels data={data}/>
     {channelId === undefined ? (<Box
     sx={{
         overflow:"hidden",
@@ -67,7 +96,7 @@ const MessageInterface = (props:ServerChannelProps) => {
     }}>
         <Box sx={{textAlign:"center"}}>
             <Typography variant="h4"
-            fontweight={700}
+            fontWeight={700}
             letterSpacing = {"-0.5px"}
             sx={{px:5, maxWidth:"600px"}}>
                 Welcome to {server_name}
@@ -78,29 +107,82 @@ const MessageInterface = (props:ServerChannelProps) => {
     </Box>):
     (
         <>
-            <div>
+
+        <Box sx={{
+            overflow:"hidden",
+            p:0,
+            height: `calc(100vh - 100px)`
+        }}>
+            <List sx={{width:"100%", bgColor:"background.paper"}}>
                 {newMessage.map((msg:Message, index:number)=>{
-                    return (
-                        <div key={index}>
-                            <p>{msg.sender}</p>
-                            <p>{msg.content}</p>
-                        </div>
-                    );
-                })}
-            </div>
-            <form>
-                <label>
-                    Enter Message:
-                    <input
-                    type="text"
+                        return (
+
+                            <ListItem key={index} alignItems="flex-start">
+                                <ListItemAvatar>
+                                    <Avatar alt="user Image"/>
+                                </ListItemAvatar>
+                                <ListItemText
+                                primaryTypographyProps={{
+                                    fontSize:"12px"
+                                ,variant:"body2"}}
+                                primary={
+                                    <Typography component="span"
+                                    variant="body1"
+                                    color="text.primary"
+                                    sx={{
+                                        display:"inline",
+                                        fontWeight:600
+                                    }}>
+                                        {msg.sender}
+                                    </Typography>
+                                }
+
+                                secondary={
+                                    <React.Fragment>
+                                        <Typography variant="body1" style={{
+                                        overflow:"visible",
+                                        whiteSpace:"normal",
+                                        textOverflow:"clip",
+                                        }}
+                                        sx={{display:"inline",
+                                        lineHeight:1.2,
+                                        fontWeight:400,
+                                        letterSpacing:"-0.2px"}}
+                                        component="span"
+                                        color="text.primary">
+                                            {msg.content}
+                                        </Typography>
+                                    </React.Fragment>
+                                }>
+                                </ListItemText>
+                            </ListItem>
+                        );
+                    })}
+            </List>
+        </Box>
+        <Box sx= {{
+            position:"sticky",
+            bottom:0,
+            width: "100%"
+        }}>
+            <form action="" onSubmit={handleSubmit}
+             style={{
+                bottom:0, right:0, padding:"1rem",
+                 backgroundColor:theme.palette.background.default,
+                 zIndex:1
+            }}>
+                <Box sx={{display:"flex"}}>
+                    <TextField fullWidth
+                    multiline
                     value={message}
+                    minRows={1}
+                    maxRows={4}
                     onChange={(e) => setMessage(e.target.value)}
-                    />
-                </label>
+                    onKeyDown={handleKeyDown}
+                    sx={{flexGrow:1}}/>
+                </Box>
             </form>
-            <button onClick={() => {sendJsonMessage({type:"message", message})}}>
-                SEND MESSAGE
-            </button>
+        </Box>
         </>
     )}
     </>
