@@ -7,6 +7,7 @@ import { Box, Typography, List, ListItem,
     ListItemText, ListItemAvatar, Avatar,
     useTheme, TextField } from "@mui/material"
 import MessageInterfaceChannels from "./MessageInterfaceChannels"
+import Scroll from './Scroll'
 
 interface ServerChannelProps{
     data: Server[];
@@ -113,8 +114,9 @@ const MessageInterface = (props:ServerChannelProps) => {
             p:0,
             height: `calc(100vh - 100px)`
         }}>
-            <List sx={{width:"100%", bgColor:"background.paper"}}>
-                {newMessage.map((msg:Message, index:number)=>{
+            <Scroll>
+                <List sx={{width:"100%", bgColor:"background.paper"}}>
+                    {newMessage.map((msg:Message, index:number)=>{
                         return (
 
                             <ListItem key={index} alignItems="flex-start">
@@ -158,7 +160,8 @@ const MessageInterface = (props:ServerChannelProps) => {
                             </ListItem>
                         );
                     })}
-            </List>
+                </List>
+            </Scroll>
         </Box>
         <Box sx= {{
             position:"sticky",
