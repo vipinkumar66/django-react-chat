@@ -1,5 +1,8 @@
 import { createTheme, responsiveFontSizes } from "@mui/material";
 
+/**
+ * Extends the default MUI Theme interface to include custom theme properties.
+ */
 declare module "@mui/material/styles" {
   interface Theme {
     primaryAppBar: {
@@ -27,7 +30,13 @@ declare module "@mui/material/styles" {
   }
 }
 
+/**
+ * Creates a custom MUI theme with specified properties.
+ * @param {string} mode - The color mode of the theme ("light" or "dark").
+ * @returns {Theme} The customized MUI theme.
+ */
 export const createMuiTheme = (mode: "light" | "dark") => {
+  // Create a base MUI theme
   let theme = createTheme({
     typography: {
       fontFamily: ["IBM Plex Sans", "sans-serif"].join(","),
@@ -52,7 +61,7 @@ export const createMuiTheme = (mode: "light" | "dark") => {
       width: 240,
     },
     palette: {
-      mode,
+      mode, // Set the color mode of the theme
     },
     components: {
       MuiAppBar: {
@@ -63,6 +72,8 @@ export const createMuiTheme = (mode: "light" | "dark") => {
       },
     },
   });
+
+  // Make the font sizes responsive
   theme = responsiveFontSizes(theme);
   return theme;
 };

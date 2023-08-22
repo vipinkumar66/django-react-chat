@@ -1,74 +1,54 @@
-import jwtinterceptor from "../helpers/jwtinterceptor"
-import { BASE_URL } from "../config"
-import React from "react"
+import jwtinterceptor from "../helpers/jwtinterceptor"; // Import the jwtinterceptor function
+import { BASE_URL } from "../config"; // Import the BASE_URL from the configuration
+import React from "react"; // Import React
 
+// Define the shape of the custom hook's return value
 interface IuseCrud<T> {
-  dataCRUD: T[];
-  fetchData: () => Promise<void>;
-  error: Error | null;
-  isLoading: boolean;
+  dataCRUD: T[]; // Array of data
+  fetchData: () => Promise<void>; // Function to fetch data
+  error: Error | null; // Error object or null
+  isLoading: boolean; // Loading status
 }
 
-const useCrud = <T>(initialData:T[], apiURL:string): IuseCrud<T> => {
-  const jwtAxios = jwtinterceptor();
+/**
+ * Custom hook for handling CRUD operations with API integration and JWT authentication.
+ * @param {Array} initialData - Initial data for the CRUD operations.
+ * @param {string} apiURL - API endpoint URL for fetching data.
+ * @returns {Object} An object containing functions and state for CRUD operations.
+ */
+const useCrud = <T>(initialData: T[], apiURL: string): IuseCrud<T> => {
+  const jwtAxios = jwtinterceptor(); // Get the configured Axios instance with JWT interceptor
 
-  const [dataCRUD, setDataCRUD] = React.useState<T[]>(initialData)
-  const [error, setError] = React.useState<Error | null>(null)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [dataCRUD, setDataCRUD] = React.useState<T[]>(initialData); // State for CRUD data
+  const [error, setError] = React.useState<Error | null>(null); // State for error
+  const [isLoading, setIsLoading] = React.useState(false); // State for loading status
 
-  const fetchData = async() =>{
-    setIsLoading(true)
-    try{
+  /**
+   * Fetch data from the API endpoint.
+   * @returns {Promise} A Promise that resolves when data is fetched successfully.
+   * @throws {Error} Throws an error if there's an issue with fetching data.
+   */
+  const fetchData = async (): Promise<any> => {
+    setIsLoading(true); // Start loading
 
-    const response = await jwtAxios.get(`${BASE_URL}${apiURL}`, {})
-    const data = response.data
-    setDataCRUD(data)
-    setIsLoading(false)
-    return data;
-
-  }catch(error:any){
-    if (error.response && error.response.status === 400 ){
-      setError(new Error("400"))
+    try {
+      // Fetch data using the configured Axios instance
+      const response = await jwtAxios.get(`${BASE_URL}${apiURL}`, {});
+      const data = response.data;
+      setDataCRUD(data); // Update the data state
+      setIsLoading(false); // Stop loading
+      return data;
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        setError(new Error("400")); // Set error state for 400 status
+      }
+      setIsLoading(false); // Stop loading
+      throw error;
     }
-    setIsLoading(false)
-    throw error;
-  }}
-  return {fetchData, dataCRUD, error, isLoading}
-}
+  };
 
-export default useCrud;
+  // Return an object with functions and states for CRUD operations
+  return { fetchData, dataCRUD, error, isLoading };
+};
 
-
-// same code with jsx
-// import jwtinterceptor from "../helpers/jwtinterceptor";
-// import { BASE_URL } from "../config";
-// import React, { useState } from "react";
-
-// const useCrud = (initialData, apiURL) => {
-//   const jwtAxios = jwtinterceptor();
-
-//   const [dataCRUD, setDataCRUD] = useState(initialData);
-//   const [error, setError] = useState(null);
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   const fetchData = async () => {
-//     setIsLoading(true);
-//     try {
-//       const response = await jwtAxios.get(`${BASE_URL}${apiURL}`, {});
-//       const data = response.data;
-//       setDataCRUD(data);
-//       setIsLoading(false);
-//       return data;
-//     } catch (error) {
-//       if (error.response && error.response.status === 400) {
-//         setError(new Error("400"));
-//       }
-//       setIsLoading(false);
-//       throw error;
-//     }
-//   };
-
-//   return { fetchData, dataCRUD, error, isLoading };
-// };
-
-// export default useCrud;
+export default useCrud; // Export the custom hook
