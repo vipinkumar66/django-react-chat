@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AuthServiceProps } from "../@types/auth-service";
 import axios from "axios";
 
@@ -7,6 +8,15 @@ import axios from "axios";
  * @returns {AuthServiceProps} - Authentication service functions.
  */
 export function useAuthService(): AuthServiceProps {
+
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+        const loggedin = localStorage.getItem("isLoggedIn")
+        if (loggedin !== null){
+            return Boolean(loggedin)
+        }else{
+            return false;
+        }
+    });
 
     const getUserDetails = async () =>{
         try{
@@ -19,10 +29,13 @@ export function useAuthService(): AuthServiceProps {
                 }
             });
             const userdetails = response.data;
+            setIsLoggedIn(true);
+            localStorage.setItem("isLoggedIn", "true");
 
             localStorage.setItem("username", userdetails.username)
         }catch (error){
             console.log(error,"error")
+            localStorage.setItem("isLoggedIn", "false");
         }
     }
 
@@ -58,14 +71,17 @@ export function useAuthService(): AuthServiceProps {
             localStorage.setItem("access_token", access);
             localStorage.setItem("refresh_token", refresh);
             localStorage.setItem("userId", getUserIdFromToken(access));
-
+            setIsLoggedIn(true)
+            localStorage.setItem("isLoggedIn", "true");
             getUserDetails()
 
         } catch (err: any) {
+            setIsLoggedIn(false)
+            localStorage.setItem("isLoggedIn", "false");
             // Return the error object for handling
             return err;
         }
     };
 
-    return { login };
+    return { login, isLoggedIn };
 }

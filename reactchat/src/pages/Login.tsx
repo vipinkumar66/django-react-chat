@@ -29,7 +29,7 @@ const Login = () => {
                 console.log(res);
             } else {
                 // If login was unsuccessful, navigate back to the home page
-                navigate("/");
+                navigate("/test");
             }
         },
     });
