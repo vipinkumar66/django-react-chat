@@ -20,10 +20,26 @@ const jwtinterceptor = (): AxiosInstance => {
             return response; // Return the response as-is
         },
         async (error) => {
+            const originalRequest = error.config
             // If the response status is 403 (Forbidden)
-            if (error.response?.status === 403) {
-                const goRoot = () => navigate('/test'); // Create a function to navigate to '/test'
-                goRoot(); // Navigate to the '/test' route
+            if (error.response?.status === 403 || 401) {
+                const refreshToken = localStorage.getItem("refresh_token");
+                if (refreshToken){
+                    try{
+                        const getNewToken = await axios.post(`${BASE_URL}/token/refresh/`,{
+                            refresh:refreshToken
+                        })
+                        const accessToken = getNewToken.data?.access
+                        localStorage.setItem("access_token", accessToken)
+                        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
+                        return jwtAxios(originalRequest)
+                    }catch(accessError){
+                        navigate('/login')
+                        throw accessError
+                    }
+                }else{
+                    navigate('/login')
+                }
             }
         }
     );
