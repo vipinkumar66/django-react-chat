@@ -11,7 +11,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from account.views import AccountViewset
+from account.views import AccountViewset, JWTCookieTokenObtainPairView
 
 
 router = DefaultRouter()
@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/docs', SpectacularAPIView.as_view(), name="schema"),
     path("api/auth/schema/ui", SpectacularSwaggerView.as_view()),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', JWTCookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]+ router.urls
 
